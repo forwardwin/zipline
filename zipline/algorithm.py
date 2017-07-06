@@ -291,6 +291,8 @@ class TradingAlgorithm(object):
             'trading_calendar',
             get_calendar("SHSZ")
         )
+        # set the algo_params
+        self.algo_params = kwargs.pop('algo_params', None)
 
         self.sim_params = kwargs.pop('sim_params', None)
         if self.sim_params is None:
