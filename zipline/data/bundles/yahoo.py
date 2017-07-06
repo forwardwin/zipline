@@ -154,7 +154,6 @@ def yahoo_equities(symbols, start=None, end=None):
                                 },
                                 inplace=True,
                             )
-                        #FIX IT
                         sessions = calendar.sessions_in_range(start_date,end_date)
                         df = df.reindex(
                             sessions.tz_localize(None),
