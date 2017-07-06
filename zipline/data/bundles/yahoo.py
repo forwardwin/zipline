@@ -16,7 +16,7 @@ from . import core as bundles
 def _cachpath(symbol, type_):
     return '-'.join((symbol.replace(os.path.sep, '_'), type_))
 
-@bundles.register('my-yahoo-equities-bundle')
+#@bundles.register('my-yahoo-equities-bundle')
 def yahoo_equities(symbols, start=None, end=None):
     """Create a data bundle ingest function from a set of symbols loaded from
     yahoo.

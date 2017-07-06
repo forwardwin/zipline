@@ -14,7 +14,7 @@ boDebug = False  # Set True to get trace messages
 
 from zipline.utils.cli import maybe_show_progress
 
-@bundles.register('my-db-equities-bundle')
+#@bundles.register('my-db-equities-bundle')
 def viadb(symbols, start=None, end=None):
     # strict this in memory so that we can reiterate over it.
     # (Because it could be a generator and they live only once)
