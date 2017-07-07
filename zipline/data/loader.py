@@ -45,7 +45,10 @@ INDEX_MAPPING = {
 
 ONE_HOUR = pd.Timedelta(hours=1)
 
-nyse_cal = get_calendar('NYSE')
+from cn_stock_holidays.zipline.default_calendar import shsz_calendar
+nyse_cal = get_calendar('SHSZ')
+
+#nyse_cal = get_calendar('NYSE')
 trading_day_nyse = nyse_cal.day
 trading_days_nyse = nyse_cal.all_sessions
 
