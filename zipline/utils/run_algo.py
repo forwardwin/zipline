@@ -61,6 +61,7 @@ def _run(handle_data,
          start,
          end,
          algo_params,
+         bm_symbol,
          output,
          print_algo,
          local_namespace,
@@ -130,7 +131,7 @@ def _run(handle_data,
                 "invalid url %r, must begin with 'sqlite:///'" %
                 str(bundle_data.asset_finder.engine.url),
             )
-        env = TradingEnvironment(asset_db_path=connstr, environ=environ)
+        env = TradingEnvironment(bm_symbol=bm_symbol, asset_db_path=connstr, environ=environ)
         #env = TradingEnvironment(bm_symbol='000001',
         #                         exchange_tz='Asia/Shanghai',
         #                         trading_calendar=get_calendar('SHSZ'),
