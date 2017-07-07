@@ -171,6 +171,13 @@ def ipython_only(option):
      help='The algo params to be optimise.',
 )
 @click.option(
+    '-b',
+    '--bm_symbol',
+    default='000001',
+    show_defaul=True,
+    help='The benchmark symbol.',
+)
+@click.option(
     '-o',
     '--output',
     default='-',
@@ -202,6 +209,8 @@ def run(ctx,
         bundle_timestamp,
         start,
         end,
+        algo_params,
+        bm_symbol,
         output,
         print_algo,
         local_namespace):
@@ -241,6 +250,8 @@ def run(ctx,
         bundle_timestamp=bundle_timestamp,
         start=start,
         end=end,
+        algo_params = algo_params,
+        bm_symbol = bm_symbol,
         output=output,
         print_algo=print_algo,
         local_namespace=local_namespace,
