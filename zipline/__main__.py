@@ -174,7 +174,7 @@ def ipython_only(option):
     '-b',
     '--bm_symbol',
     default='000001',
-    show_defaul=True,
+    show_default=True,
     help='The benchmark symbol.',
 )
 @click.option(
