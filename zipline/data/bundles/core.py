@@ -620,3 +620,5 @@ def _make_bundle_core():
 
 
 bundles, register, unregister, ingest, load, clean = _make_bundle_core()
+register_calendar("YAHOO", get_calendar("SHSZ"))
+register_calendar("QUANDL", get_calendar("NYSE"))
