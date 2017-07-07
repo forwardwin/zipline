@@ -89,7 +89,7 @@ def viadb(symbols, start=None, end=None):
             dfData.reindex(new_index, copy=False)
             # FIX IT
             sessions = calendar.sessions_in_range(start_date, end_date)
-            print sessions.tz_localize(None)
+            #print sessions.tz_localize(None)
             dfData = dfData.reindex(
                 sessions.tz_localize(None),
                 copy=False,
