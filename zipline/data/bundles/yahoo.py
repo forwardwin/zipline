@@ -12,7 +12,7 @@ from .core import register
 def _cachpath(symbol, type_):
     return '-'.join((symbol.replace(os.path.sep, '_'), type_))
 
-
+#@bundles.register('my-yahoo-equities-bundle')
 def yahoo_equities(symbols, start=None, end=None):
     """Create a data bundle ingest function from a set of symbols loaded from
     yahoo.
@@ -81,6 +81,7 @@ def yahoo_equities(symbols, start=None, end=None):
             ('symbol', 'object'),
         ]))
 
+
         def _pricing_iter():
             sid = 0
             with maybe_show_progress(
@@ -93,45 +94,80 @@ def yahoo_equities(symbols, start=None, end=None):
                     try:
                         df = cache[path]
                     except KeyError:
-                        df = cache[path] = DataReader(
-                            symbol,
-                            'yahoo',
-                            start,
-                            end,
-                            session=session,
-                        ).sort_index()
+                        provider = "yahoo"
+                        try:
+                            print("To Download symbol:",symbol,path)
+                            df = cache[path] = DataReader(
+                                name = symbol + '.ss' if symbol.startswith('6') else symbol + '.sz',
+                                data_source = 'yahoo',
+                                start = start,
+                                end = end,
+                                retry_count=1,
+                                session=session,
+                            ).sort_index()
+                            if df is  None: #FIXIT timeout maybe
+                                raise Exception("Empty Result!",symbol)
+                        except Exception,e:
+                            print ('Got a Exception - reason "%s" for stock(%s) in yahoo, try tushare'% (str(e),symbol))
+                            import tushare as ts
+                            try:
+                                df = cache[path] = ts.get_h_data(
+                                    symbol,
+                                    start = start.strftime("%Y-%m-%d") if start != None else None,
+                                    end = end.strftime("%Y-%m-%d") if end != None else None,
+                                    retry_count=5,
+                                    pause=1
+                                ).sort_index()
+                                provider = 'tushare'
+                                if df is  None: #FIXIT timeout maybe
+                                    raise Exception("Empty Result!",symbol)
+                            except Exception,e1:
+                                print ('Got a Exception - reason "%s" for stock(%s) in tushare, ignore it'% (str(e1),symbol))
+                                sys.exit()
+                                #sid += 1
+                                #continue
 
-                    # the start date is the date of the first trade and
-                    # the end date is the date of the last trade
-                    start_date = df.index[0]
-                    end_date = df.index[-1]
-                    # The auto_close date is the day after the last trade.
-                    ac_date = end_date + pd.Timedelta(days=1)
-                    metadata.iloc[sid] = start_date, end_date, ac_date, symbol
+                        print("Got stock(%s) from provide(%s)" % (symbol,provider))
+                        # the start date is the date of the first trade and
+                        # the end date is the date of the last trade
+                        start_date = df.index[0]
+                        end_date = df.index[-1]
+                        # The auto_close date is the day after the last trade.
+                        ac_date = end_date + pd.Timedelta(days=1)
+                        metadata.iloc[sid] = start_date, end_date, ac_date, symbol
 
-                    df.rename(
-                        columns={
-                            'Open': 'open',
-                            'High': 'high',
-                            'Low': 'low',
-                            'Close': 'close',
-                            'Volume': 'volume',
-                        },
-                        inplace=True,
-                    )
-                    yield sid, df
-                    sid += 1
+                        if provider == 'tushare':
+                            new_index= ['open', 'high', 'low', 'close','volume']
+                            df.reindex(new_index,copy=False)
+                        else:
+                            df.rename(
+                                columns={
+                                    'Open': 'open',
+                                    'High': 'high',
+                                    'Low': 'low',
+                                    'Adj Close': 'close',
+                                    'Volume': 'volume',
+                                },
+                                inplace=True,
+                            )
+                        sessions = calendar.sessions_in_range(start_date,end_date)
+                        df = df.reindex(
+                            sessions.tz_localize(None),
+                            copy=False,
+                            ).fillna(0.0)
+                        yield sid, df
+                        sid += 1
 
         daily_bar_writer.write(_pricing_iter(), show_progress=show_progress)
-
         symbol_map = pd.Series(metadata.symbol.index, metadata.symbol)
 
         # Hardcode the exchange to "YAHOO" for all assets and (elsewhere)
         # register "YAHOO" to resolve to the NYSE calendar, because these are
-        # all equities and thus can use the NYSE calendar.
+        # all equities and thus can use the NYSE calend:war.
         metadata['exchange'] = "YAHOO"
-        asset_db_writer.write(equities=metadata)
 
+        asset_db_writer.write(equities=metadata) #FIX IT
+        '''
         adjustments = []
         with maybe_show_progress(
                 symbols,
@@ -175,9 +211,9 @@ def yahoo_equities(symbols, start=None, end=None):
         dividends['pay_date'] = pd.NaT
 
         adjustment_writer.write(splits=splits, dividends=dividends)
-
+        '''
+        adjustment_writer.write()
     return ingest
-
 
 # bundle used when creating test data
 register(
