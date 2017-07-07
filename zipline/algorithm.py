@@ -291,6 +291,8 @@ class TradingAlgorithm(object):
         # set the capital base
         self.capital_base = kwargs.pop('capital_base', DEFAULT_CAPITAL_BASE)
         self.sim_params = kwargs.pop('sim_params', None)
+        # set the algo_params
+        self.algo_params = kwargs.pop('algo_params', None)
         if self.sim_params is None:
             self.sim_params = create_simulation_parameters(
                 capital_base=self.capital_base,
