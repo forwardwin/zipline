@@ -293,6 +293,8 @@ class TradingAlgorithm(object):
         )
 
         self.sim_params = kwargs.pop('sim_params', None)
+        # set the algo_params
+        self.algo_params = kwargs.pop('algo_params', None)
         if self.sim_params is None:
             self.sim_params = create_simulation_parameters(
                 start=kwargs.pop('start', None),

@@ -164,6 +164,13 @@ def ipython_only(option):
     help='The end date of the simulation.',
 )
 @click.option(
+     '-p',
+     '--algo_params',
+     default=None,
+     show_default=True,
+     help='The algo params to be optimise.',
+)
+@click.option(
     '-o',
     '--output',
     default='-',
