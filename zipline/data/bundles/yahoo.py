@@ -5,6 +5,7 @@ import pandas as pd
 from pandas_datareader.data import DataReader
 import requests
 from cn_stock_holidays.zipline.default_calendar import shsz_calendar
+import sys
 from zipline.utils.cli import maybe_show_progress
 from .core import register
 
