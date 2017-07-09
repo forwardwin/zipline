@@ -20,7 +20,7 @@ from six import string_types
 from sqlalchemy import create_engine
 
 from zipline.assets import AssetDBWriter, AssetFinder
-from zipline.data.loader import load_market_data
+from zipline.data.loader import load_market_data,load_dump_data
 from zipline.utils.calendars import get_calendar
 from zipline.utils.memoize import remember_last
 
@@ -77,14 +77,16 @@ class TradingEnvironment(object):
     def __init__(
         self,
         load=None,
-        bm_symbol='000001',
+        bm_symbol=None,
         exchange_tz="Asia/Shanghai",
         trading_calendar=None,
         asset_db_path=':memory:'
     ):
 
         self.bm_symbol = bm_symbol
-        if not load:
+        if not load and self.bm_symbol is None:
+            load = load_dump_data
+        if not load and not self.bm_symbol is not None :
             load = load_market_data
 
         if not trading_calendar:
