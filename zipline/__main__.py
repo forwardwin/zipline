@@ -173,7 +173,7 @@ def ipython_only(option):
 @click.option(
     '-b',
     '--bm_symbol',
-    default='000001',
+    default=None,
     show_default=True,
     help='The benchmark symbol.',
 )
