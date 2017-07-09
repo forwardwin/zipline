@@ -97,6 +97,18 @@ def has_data_for_dates(series_or_df, first_date, last_date):
     first, last = dts[[0, -1]]
     return (first <= first_date) and (last >= last_date)
 
+import numpy as np
+def load_dump_data(trading_day, trading_days, bm_symbol):
+    # dates = pd.date_range('2001-01-01 00:00:00', periods=365, tz="Asia/Shanghai")
+    #bm = pd.Series(data=np.random.random_sample(len(trading_days)), index=trading_days)
+    bm = pd.Series(data=0, index=trading_days)
+
+    #tr = pd.DataFrame(data=np.random.random_sample((len(trading_days), 7)), index=trading_days,
+    #                  columns=['1month', '3month', '6month', '1year', '2year', '3year', '10year'])
+    tr = pd.DataFrame(data=0, index=trading_days,
+                      columns=['1month', '3month', '6month', '1year', '2year', '3year', '10year'])
+    return bm, tr
+
 
 def load_market_data(trading_day=trading_day_nyse,
                      trading_days=trading_days_nyse,
