@@ -23,7 +23,7 @@ from six import iteritems
 from six.moves.urllib_error import HTTPError
 
 from .benchmarks import get_benchmark_returns
-from . import treasuries, treasuries_can
+from . import treasuries, treasuries_can,cn_treasury_curve
 from ..utils.paths import (
     cache_root,
     data_root,
@@ -297,10 +297,13 @@ def ensure_treasury_data(bm_symbol, first_date, last_date, now):
     comparing the current time to the result of os.path.getmtime on the cache
     path.
     """
+    '''
     loader_module, filename, source = INDEX_MAPPING.get(
         bm_symbol, INDEX_MAPPING['^GSPC']
     )
     first_date = max(first_date, loader_module.earliest_possible_date())
+    '''
+    filename = "cn_treasury_curves.csv"
     path = get_data_filepath(filename)
 
     # If the path does not exist, it means the first download has not happened
@@ -331,8 +334,10 @@ def ensure_treasury_data(bm_symbol, first_date, last_date, now):
             )
 
     try:
-        data = loader_module.get_treasury_data(first_date, last_date)
+        #data = loader_module.get_treasury_data(first_date, last_date)
+        data = cn_treasury_curve.insert_zipline_treasure_format()
         data.to_csv(path)
+        data = pd.DataFrame.from_csv(path).tz_localize('UTC')
     except (OSError, IOError, HTTPError):
         logger.exception('failed to cache treasury data')
     if not has_data_for_dates(data, first_date, last_date):
