@@ -23,7 +23,7 @@ from six import iteritems
 from six.moves.urllib_error import HTTPError
 
 from .benchmarks import get_benchmark_returns
-from . import treasuries, treasuries_can
+from . import treasuries, treasuries_can,cn_treasury_curve
 from ..utils.paths import (
     cache_root,
     data_root,
@@ -284,28 +284,55 @@ def ensure_treasury_data(symbol, first_date, last_date, now, environ=None):
     comparing the current time to the result of os.path.getmtime on the cache
     path.
     """
-    loader_module, filename, source = INDEX_MAPPING.get(
-        symbol, INDEX_MAPPING['SPY'],
-    )
-    first_date = max(first_date, loader_module.earliest_possible_date())
+    #loader_module, filename, source = INDEX_MAPPING.get(
+    #    symbol, INDEX_MAPPING['SPY'],
+    #)
+    #first_date = max(first_date, loader_module.earliest_possible_date())
 
-    data = _load_cached_data(filename, first_date, last_date, now, 'treasury',
-                             environ)
-    if data is not None:
-        return data
+    filename = "cn_treasury_curves.csv"
+    path = get_data_filepath(filename)
 
-    # If no cached data was found or it was missing any dates then download the
-    # necessary data.
-    logger.info('Downloading treasury data for {symbol!r}.', symbol=symbol)
+    # If the path does not exist, it means the first download has not happened
+    # yet, so don't try to read from 'path'.
+    if os.path.exists(path):
+        try:
+            data = from_csv(path)
+            data.index = data.index.to_datetime().tz_localize('UTC')
+            if has_data_for_dates(data, first_date, last_date):
+                return data
+
+            # Don't re-download if we've successfully downloaded and written a
+            # file in the last hour.
+            last_download_time = last_modified_time(path)
+            if (now - last_download_time) <= ONE_HOUR:
+                logger.warn(
+                    "Refusing to download new {resource} data because a "
+                    "download succeeded at {time}.",
+                    resource=resource_name,
+                    time=last_download_time,
+                )
+                return data
+
+        except (OSError, IOError, ValueError) as e:
+            # These can all be raised by various versions of pandas on various
+            # classes of malformed input.  Treat them all as cache misses.
+            logger.info(
+                "Loading data for {path} failed with error [{error}].",
+                path=path,
+                error=e,
+            )
 
     try:
-        data = loader_module.get_treasury_data(first_date, last_date)
-        data.to_csv(get_data_filepath(filename, environ))
+        #data = loader_module.get_treasury_data(first_date, last_date)
+        data = cn_treasury_curve.insert_zipline_treasure_format()
+        data.to_csv(path)
+        data = pd.DataFrame.from_csv(path).tz_localize('UTC')
     except (OSError, IOError, HTTPError):
         logger.exception('failed to cache treasury data')
     if not has_data_for_dates(data, first_date, last_date):
         logger.warn("Still don't have expected data after redownload!")
     return data
+
 
 
 def _load_cached_data(filename, first_date, last_date, now, resource_name,
@@ -355,7 +382,6 @@ def _load_cached_data(filename, first_date, last_date, now, resource_name,
         path=path,
     )
     return None
-
 
 def _load_raw_yahoo_data(indexes=None, stocks=None, start=None, end=None):
     """Load closing prices from yahoo finance.
