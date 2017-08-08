@@ -7,10 +7,15 @@ import numpy  as np
 import pandas as pd
 import datetime
 from cn_stock_holidays.zipline.default_calendar import shsz_calendar
+import requests
+
 
 boDebug = False  # Set True to get trace messages
 
 from zipline.utils.cli import maybe_show_progress
+
+def _cachpath(symbol, type_):
+    return '-'.join((symbol.replace(os.path.sep, '_'), type_))
 
 def viadb(symbols, start=None, end=None):
     # strict this in memory so that we can reiterate over it.
@@ -34,12 +39,12 @@ def viadb(symbols, start=None, end=None):
                start=start,
                end=end):
         if boDebug:
-            print "entering ingest and creating blank dfMetadata"
+            print "entering ingest and creating blank metadata"
         import sqlite3
         IFIL = "History.db"
         conn = sqlite3.connect(IFIL, check_same_thread=False)
 
-        dfMetadata = pd.DataFrame(np.empty(len(tuSymbols), dtype=[
+        metadata = pd.DataFrame(np.empty(len(symbols), dtype=[
             ('start_date', 'datetime64[ns]'),
             ('end_date', 'datetime64[ns]'),
             ('auto_close_date', 'datetime64[ns]'),
@@ -47,14 +52,14 @@ def viadb(symbols, start=None, end=None):
         ]))
 
         if boDebug:
-            print "dfMetadata", type(dfMetadata)
-            print  dfMetadata.describe
+            print "metadata", type(metadata)
+            print  metadata.describe
             print
 
         # We need to feed something that is iterable - like a list or a generator -
         # that is a tuple with an integer for sid and a DataFrame for the data to
         # daily_bar_writer
-
+        '''
         liData = []
         iSid = 0
         for S in tuSymbols:
@@ -97,31 +102,69 @@ def viadb(symbols, start=None, end=None):
 
             liData.append((iSid, dfData))
             iSid += 1
+        '''
+        def _pricing_iter():
+            sid = 0
+            with maybe_show_progress(
+                    symbols,
+                    show_progress,
+                    label='Fetch stocks pricing data from db: ') as it, \
+                    requests.Session() as session:
+                for symbol in it:
+                    path = _cachpath(symbol, 'ohlcv')
+                    try:
+                        df = cache[path]
+                    except KeyError:
+                        query = "select * from '%s' order by date desc" % symbol
+                        df = cache[path]  = pd.read_sql(sql=query, con=conn, index_col='date', parse_dates=['date']).sort_index()
+                        if boDebug:
+                            print "read_sqllite df", type(df), "length", len(df)
 
-        if boDebug:
-            print "liData", type(liData), "length", len(liData)
-            print "Now calling daily_bar_writer"
+                    # the start date is the date of the first trade and
+                    # the end date is the date of the last trade
+                    start_date = df.index[0]
+                    end_date = df.index[-1]
+                    # The auto_close date is the day after the last trade.
+                    ac_date = end_date + pd.Timedelta(days=1)
+                    if boDebug:
+                        print "start_date", type(start_date), start_date
+                        print "end_date", type(end_date), end_date
+                        print "ac_date", type(ac_date), ac_date
 
-        daily_bar_writer.write(liData, show_progress=False)
+                    metadata.iloc[sid] = start_date, end_date, ac_date, symbol
+                    new_index = ['open', 'high', 'low', 'close', 'volume']
+                    df.reindex(new_index, copy=False)
+                    # FIX IT
+                    sessions = calendar.sessions_in_range(start_date, end_date)
+                    df = df.reindex(
+                        sessions.tz_localize(None),
+                        copy=False,
+                    ).fillna(0.0)
+
+                    yield sid, df
+                    sid += 1
+
+
+        daily_bar_writer.write(_pricing_iter(), show_progress=False)
 
         # Hardcode the exchange to "YAHOO" for all assets and (elsewhere)
         # register "YAHOO" to resolve to the NYSE calendar, because these are
         # all equities and thus can use the NYSE calendar.
-        dfMetadata['exchange'] = "YAHOO"
+        metadata['exchange'] = "YAHOO"
 
         if boDebug:
             print "returned from daily_bar_writer"
             print "calling asset_db_writer"
-            print "dfMetadata", type(dfMetadata)
+            print "metadata", type(metadata)
             print
 
         # Not sure why symbol_map is needed
-        symbol_map = pd.Series(dfMetadata.symbol.index, dfMetadata.symbol)
+        symbol_map = pd.Series(metadata.symbol.index, metadata.symbol)
         if boDebug:
             print "symbol_map", type(symbol_map)
             print symbol_map
 
-        asset_db_writer.write(equities=dfMetadata)
+        asset_db_writer.write(equities=metadata)
 
         if boDebug:
             print "returned from asset_db_writer"
