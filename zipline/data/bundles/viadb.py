@@ -32,6 +32,8 @@ def viadb(symbols, start=None, end=None):
                daily_bar_writer,
                adjustment_writer,
                calendar,
+               start_session,
+               end_session,
                cache,
                show_progress,
                output_dir,
