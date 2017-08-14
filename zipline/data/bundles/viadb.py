@@ -135,7 +135,7 @@ def viadb(symbols, start=None, end=None):
 
                     metadata.iloc[sid] = start_date, end_date, ac_date, symbol
                     new_index = ['open', 'high', 'low', 'close', 'volume']
-                    df.reindex(new_index, copy=False)
+                    df = df.reindex(columns = new_index, copy=False) #fix bug
                     # FIX IT
                     sessions = calendar.sessions_in_range(start_date, end_date)
                     df = df.reindex(
