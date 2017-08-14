@@ -139,7 +139,7 @@ def yahoo_equities(symbols, start=None, end=None):
 
                         if provider == 'tushare':
                             new_index= ['open', 'high', 'low', 'close','volume']
-                            df.reindex(new_index,copy=False)
+                            df = df.reindex(columns=new_index, copy=False)  # fix bug
                         else:
                             df.rename(
                                 columns={
