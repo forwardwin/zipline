@@ -14,7 +14,7 @@ numpy==1.9.2
 # scipy and pandas are required for statsmodels,
 # statsmodels in turn is required for some pandas packages
 scipy==0.15.1
-pandas==0.16.1
+pandas==0.17.0
 pandas-datareader==0.2.1
 # Needed for parts of pandas.stats
 patsy==0.4.0
