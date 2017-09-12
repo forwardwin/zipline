@@ -71,3 +71,6 @@ empyrical==0.1.11
 # For tushare
 tushare==0.9.0
 bs4==4.6.0
+
+# for cn-stock-holidays
+-e git+git://github.com/kanghua309/cn_stock_holidays.git@master#egg=cn-stock-holidays
