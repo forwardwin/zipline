@@ -455,6 +455,6 @@ def get_versions():
     except NotThisMethod:
         pass
 
-    return {"version": "kang-dev-based-1.0.2", "full-revisionid": None,
+    return {"version": "kang-dev-china-based-1.0.2", "full-revisionid": None,
             "dirty": None,
             "error": "unable to compute version"}
