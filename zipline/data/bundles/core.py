@@ -225,7 +225,7 @@ def _make_bundle_core():
     @curry
     def register(name,
                  f,
-                 calendar_name='NYSE',
+                 calendar='NYSE',
                  start_session=None,
                  end_session=None,
                  minutes_per_day=390,
@@ -305,7 +305,7 @@ def _make_bundle_core():
         # calendar currently takes between 0.5 and 1 seconds, which causes a
         # noticeable delay on the zipline CLI.
         _bundles[name] = RegisteredBundle(
-            calendar_name=calendar_name,
+            calendar_name=calendar,
             start_session=start_session,
             end_session=end_session,
             minutes_per_day=minutes_per_day,
