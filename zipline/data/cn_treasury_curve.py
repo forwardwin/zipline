@@ -42,7 +42,7 @@ def get_data():
     for year in to_downloads:
         print('Downloading from ' + DONWLOAD_URL % (year, ycdefids))
         response = requests.get(DONWLOAD_URL % (year, ycdefids))
-        print "response:", response
+        print ("response:", response)
         fetched_data.append(BytesIO(response.content))
 
     # combine all data

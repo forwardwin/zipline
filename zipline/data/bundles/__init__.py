@@ -25,9 +25,6 @@ __all__ = [
     'register',
     'to_bundle_ingest_dirname',
     'unregister',
-<<<<<<< HEAD
-=======
     'yahoo_equities',
     'viadb',
->>>>>>> add bundle read from sqllite in current work
 ]

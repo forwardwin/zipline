@@ -30,7 +30,8 @@ from zipline.utils.compat import mappingproxy
 from zipline.utils.input_validation import ensure_timestamp, optionally
 import zipline.utils.paths as pth
 from zipline.utils.preprocess import preprocess
-from zipline.utils.calendars import get_calendar
+
+from zipline.utils.calendars import get_calendar, register_calendar
 
 
 def asset_db_path(bundle_name, timestr, environ=None, db_version=None):
@@ -620,5 +621,5 @@ def _make_bundle_core():
 
 
 bundles, register, unregister, ingest, load, clean = _make_bundle_core()
-register_calendar("YAHOO", get_calendar("SHSZ"))
-register_calendar("QUANDL", get_calendar("NYSE"))
+#register_calendar("YAHOO", get_calendar("SHSZ"))
+#register_calendar("QUANDL", get_calendar("NYSE"))

@@ -87,16 +87,12 @@ class TradingEnvironment(object):
     ):
 
         self.bm_symbol = bm_symbol
-<<<<<<< HEAD
-        if not load:
-            load = partial(load_market_data, environ=environ)
-=======
+        #if not load:
+        #    load = partial(load_market_data, environ=environ)
         if not load and self.bm_symbol is None:
             load = load_dump_data
         if not load and not self.bm_symbol is not None :
             load = load_market_data
->>>>>>> for speed and offline test , disable benchmark and treasury - so use load_dump_data instead of load_market_data
-
         if not trading_calendar:
             trading_calendar = get_calendar("SHSZ")
 
