@@ -16,17 +16,8 @@ requests-file==1.4.1
 
 # scipy and pandas are required for statsmodels,
 # statsmodels in turn is required for some pandas packages
-<<<<<<< HEAD
 scipy==0.17.1
 pandas==0.18.1
->>>>>>> modify some requirement
-=======
-scipy==0.15.1
-pandas==0.17.1
-<<<<<<< HEAD
->>>>>>> add requirement for tushare
-=======
->>>>>>> modify some requirement
 pandas-datareader==0.2.1
 # Needed for parts of pandas.stats
 patsy==0.4.0
@@ -87,6 +78,7 @@ empyrical==0.2.2
 tables==3.3.0
 
 # For tushare
+lxml==4.0.0
 tushare==0.9.0
 beautifulsoup4==4.6.0
 
