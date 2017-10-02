@@ -8,22 +8,26 @@ import pandas as pd
 import datetime
 from cn_stock_holidays.zipline.default_calendar import shsz_calendar
 import requests
+import sqlite3
 
-
-boDebug = False  # Set True to get trace messages
+boDebug = True  # Set True to get trace messages
 
 from zipline.utils.cli import maybe_show_progress
 
 def _cachpath(symbol, type_):
     return '-'.join((symbol.replace(os.path.sep, '_'), type_))
 
+
+IFIL = "History.db"
 def viadb(symbols, start=None, end=None):
     # strict this in memory so that we can reiterate over it.
     # (Because it could be a generator and they live only once)
-    tuSymbols = tuple(symbols)
 
-    if boDebug:
-        print "entering viacsv.  tuSymbols=", tuSymbols
+
+    #tuSymbols = tuple(symbols)
+
+    #if boDebug:
+    #    print "entering viacsv.  tuSymbols=", tuSymbols
 
     # Define our custom ingest function
     def ingest(environ,
@@ -42,9 +46,16 @@ def viadb(symbols, start=None, end=None):
                end=end):
         if boDebug:
             print "entering ingest and creating blank metadata"
-        import sqlite3
-        IFIL = "History.db"
         conn = sqlite3.connect(IFIL, check_same_thread=False)
+        if len(symbols) == 0:
+            query = "select name from sqlite_master where type='table' order by name"
+            _df = pd.read_sql(query, conn)
+            for table in _df.name:
+                if table.isdigit():
+                    symbols[table] = None
+
+        if boDebug:
+            print "total symbols tuSymbols=", tuple(symbols)
 
         metadata = pd.DataFrame(np.empty(len(symbols), dtype=[
             ('start_date', 'datetime64[ns]'),
@@ -112,6 +123,7 @@ def viadb(symbols, start=None, end=None):
                     show_progress,
                     label='Fetch stocks pricing data from db: ') as it, \
                     requests.Session() as session:
+
                 for symbol in it:
                     path = _cachpath(symbol, 'ohlcv')
                     try:
