@@ -10,7 +10,7 @@ from cn_stock_holidays.zipline.default_calendar import shsz_calendar
 import requests
 import sqlite3
 
-boDebug = True  # Set True to get trace messages
+boDebug = False  # Set True to get trace messages
 
 from zipline.utils.cli import maybe_show_progress
 
