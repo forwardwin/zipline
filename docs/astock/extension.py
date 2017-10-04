@@ -2,7 +2,7 @@
 # viadb 中的数据库history.db 由其他程序维护写入，不在本项目内 - 自由发挥吧
 
 
-from zipline.data.bundles import register, yahoo_equities
+from zipline.data.bundles import register
 from zipline.data.bundles.viadb import viadb
 from cn_stock_holidays.zipline.default_calendar import shsz_calendar
 
@@ -18,5 +18,5 @@ equities1 = {
 register(
    'my-db-bundle',  # name this whatever you like
     viadb(equities1),
-    calendar='SHSZ'
+    calendar_name='SHSZ'
 )
