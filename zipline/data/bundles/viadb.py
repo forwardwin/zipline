@@ -52,7 +52,7 @@ def viadb(symbols, start=None, end=None):
                 if table.isdigit():
                     symbols[table] = None
         if boDebug:
-            print "total symbols tuSymbols=", tuple(symbols)
+            print("total symbols tuSymbols=", tuple(symbols))
 
         metadata = pd.DataFrame(np.empty(len(symbols), dtype=[
             ('start_date', 'datetime64[ns]'),
