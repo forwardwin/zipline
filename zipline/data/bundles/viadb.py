@@ -46,7 +46,13 @@ def viadb(symbols, start=None, end=None):
                end=end):
         if boDebug:
             print "entering ingest and creating blank metadata"
+
+        if False == os.path.exists(IFIL):
+            print("DB source file %s not exist in current path:" % IFIL)
+            raise IOError
+
         conn = sqlite3.connect(IFIL, check_same_thread=False)
+
         if len(symbols) == 0:
             query = "select name from sqlite_master where type='table' order by name"
             _df = pd.read_sql(query, conn)
