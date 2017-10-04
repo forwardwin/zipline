@@ -18,5 +18,5 @@ equities1 = {
 register(
    'my-db-bundle',  # name this whatever you like
     viadb(equities1),
-    calendar_name='SHSZ'
+    calendar='SHSZ'
 )
