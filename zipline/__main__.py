@@ -193,7 +193,9 @@ def ipython_only(option):
     help='Print the algorithm to stdout.',
 )
 @click.option(
-     '--plot',
+     '--plot/--no-plot',
+     #default=os.name != "nt",
+     is_flag = True,
      default=False,
      help="plot result"
 )
