@@ -61,11 +61,11 @@ def _run(handle_data,
          start,
          end,
          algo_params,
-         bm_symbol,
          output,
          print_algo,
          local_namespace,
-         environ):
+         environ,
+         bm_symbol=None):
     """Run a backtest for the given algorithm.
 
     This is shared between the cli and :func:`zipline.run_algo`.
@@ -367,4 +367,5 @@ def run_algorithm(start,
         print_algo=False,
         local_namespace=False,
         environ=environ,
+        bm_symbol=None
     )

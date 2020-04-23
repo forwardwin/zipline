@@ -215,6 +215,7 @@ def ensure_benchmark_data(symbol, first_date, last_date, now, trading_day,
 
     # If no cached data was found or it was missing any dates then download the
     # necessary data.
+    logger.info("fuwen")
     logger.info(
         ('Downloading benchmark data for {symbol!r} '
             'from {first_date} to {last_date}'),

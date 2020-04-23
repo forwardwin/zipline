@@ -15,6 +15,8 @@ from zipline.utils.calendars.us_futures_calendar import (
 )
 
 _default_calendar_factories = {
+    'SHSZ': NYSEExchangeCalendar,
+    'XNYS': NYSEExchangeCalendar,
     'NYSE': NYSEExchangeCalendar,
     'CME': CMEExchangeCalendar,
     'ICE': ICEExchangeCalendar,

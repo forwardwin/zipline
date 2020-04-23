@@ -21,11 +21,14 @@ its long moving average (indicating upwards momentum) and sells
 its shares once the averages cross again (indicating downwards
 momentum).
 """
-
+from logbook import Logger
+log = Logger('Logbook')
 from zipline.api import order_target, record, symbol
 
 
 def initialize(context):
+    log.info("initialize")
+    print("initialize")
     context.sym = symbol('AAPL')
     context.i = 0
 
@@ -100,6 +103,7 @@ def analyze(context=None, results=None):
 def _test_args():
     """Extra arguments to use when zipline's automated tests run this example.
     """
+    print("_test_args")
     import pandas as pd
 
     return {
